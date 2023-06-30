@@ -10,6 +10,7 @@ const ExploreItems = () => {
   const [exploreItems, setExploreItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [numLoaded, setNumLoaded] = useState(8);
+  const [allLoaded, setAllLoaded] = useState(false);
 
   async function fetchData(apiURL) {
     const { data } = await axios.get(apiURL || API);
@@ -32,8 +33,11 @@ const ExploreItems = () => {
   }
 
   const displayMore = () => {
-    if (numLoaded + 4 <= exploreItems.length) {
-      setNumLoaded(numLoaded + 4);
+    let loaded = numLoaded
+    if (loaded + 4 <= exploreItems.length) {
+      loaded += 4
+      setNumLoaded(loaded);
+      loaded >= 16 && setAllLoaded(true);
     }
   };
 
@@ -162,9 +166,11 @@ const ExploreItems = () => {
             </div>
           ))}
       <div className="col-md-12 text-center">
-        <button id="loadmore" className="btn-main lead" onClick={displayMore}>
-          Load more
-        </button>
+        {!allLoaded && (
+          <button id="loadmore" className="btn-main lead" onClick={displayMore}>
+            Load more
+          </button>
+        )}
       </div>
     </>
   );
