@@ -1,10 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import AuthorBanner from "../images/author_banner.jpg";
 import AuthorItems from "../components/author/AuthorItems";
-import { Link } from "react-router-dom";
-import AuthorImage from "../images/author_thumbnail.jpg";
+import { Link, useParams } from "react-router-dom";
+import axios from "axios";
+import { useEffect } from "react";
+import Skeleton from "../components/UI/Skeleton";
 
 const Author = () => {
+  const { id } = useParams();
+  const [authorData, setAuthorData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [followers, setFollowers] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  async function fetchAuthorData() {
+    const { data } = await axios.get(
+      `https://us-central1-nft-cloud-functions.cloudfunctions.net/authors?author=${id}`
+    );
+    setAuthorData(data);
+    setFollowers(data.followers);
+    setIsLoading(false);
+  }
+
+  const updateFollowing = () => {
+    if (!isFollowing) {
+      setFollowers(followers + 1);
+      setIsFollowing(true);
+    } else {
+      setFollowers(followers - 1);
+      setIsFollowing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAuthorData();
+  }, []);
+
   return (
     <div id="wrapper">
       <div className="no-bottom no-top" id="content">
@@ -25,29 +56,68 @@ const Author = () => {
                 <div className="d_profile de-flex">
                   <div className="de-flex-col">
                     <div className="profile_avatar">
-                      <img src={AuthorImage} alt="" />
-
-                      <i className="fa fa-check"></i>
-                      <div className="profile_name">
-                        <h4>
-                          Monica Lucas
-                          <span className="profile_username">@monicaaaa</span>
-                          <span id="wallet" className="profile_wallet">
-                            UDHUHWudhwd78wdt7edb32uidbwyuidhg7wUHIFUHWewiqdj87dy7
-                          </span>
-                          <button id="btn_copy" title="Copy Text">
-                            Copy
-                          </button>
-                        </h4>
-                      </div>
+                      {isLoading ? (
+                        <>
+                          <Skeleton
+                            width={150}
+                            height={150}
+                            borderRadius={100}
+                          />
+                          <i className="fa fa-check"></i>
+                          <div className="profile_name">
+                            <h4>
+                              <Skeleton width={120} height={28} />
+                              <span className="profile_username">
+                                <Skeleton width={100} height={32} />
+                              </span>
+                              <span id="wallet" className="profile_wallet">
+                                <Skeleton width={200} height={32} />
+                              </span>
+                              <Skeleton width={52} height={22.2} />
+                            </h4>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <img src={authorData.authorImage} alt="" />
+                          <i className="fa fa-check"></i>
+                          <div className="profile_name">
+                            <h4>
+                              {authorData.authorName}
+                              <span className="profile_username">
+                                @{authorData.tag}
+                              </span>
+                              <span id="wallet" className="profile_wallet">
+                                {authorData.address}
+                              </span>
+                              <button id="btn_copy" title="Copy Text">
+                                Copy
+                              </button>
+                            </h4>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="profile_follow de-flex">
                     <div className="de-flex-col">
-                      <div className="profile_follower">573 followers</div>
-                      <Link to="#" className="btn-main">
-                        Follow
-                      </Link>
+                      {isLoading ? (
+                        <>
+                          <div className="profile_follower">
+                            <Skeleton width={111} height={26} />
+                          </div>
+                          <Skeleton width={123} height={42} borderRadius={5} />
+                        </>
+                      ) : (
+                        <>
+                          <div className="profile_follower">
+                            {followers} Followers
+                          </div>
+                            <button className="btn-main" onClick={updateFollowing}>
+                              {isFollowing ? "Unfollow" : "Follow"}
+                            </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -55,7 +125,7 @@ const Author = () => {
 
               <div className="col-md-12">
                 <div className="de_tab tab_simple">
-                  <AuthorItems />
+                  <AuthorItems authorData={authorData} isLoading={isLoading} />
                 </div>
               </div>
             </div>
