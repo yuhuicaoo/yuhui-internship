@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import SubHeader from "../images/subheader.jpg";
 import ExploreItems from "../components/explore/ExploreItems";
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import AOS from "aos";
+import "aos/dist/aos.css";
 AOS.init();
 
 const Explore = () => {
@@ -31,7 +31,7 @@ const Explore = () => {
             </div>
           </div>
         </section>
-        {/* from Main dont remove (merge practice) */}
+
         <section aria-label="section">
           <div className="container">
             <div className="row" data-aos="fade" data-aos-duration="500">
