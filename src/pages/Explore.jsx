@@ -31,7 +31,7 @@ const Explore = () => {
             </div>
           </div>
         </section>
-
+        {/* Merge Practice  */}
         <section aria-label="section">
           <div className="container">
             <div className="row" data-aos="fade" data-aos-duration="500">
